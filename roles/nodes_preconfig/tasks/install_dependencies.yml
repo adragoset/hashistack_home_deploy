@@ -1,0 +1,64 @@
+- name: Install utility tools
+  apt:
+    name:  "{{item}}"
+    state: present
+  with_items:
+    - ca-certificates
+    - wget
+    - curl
+    - python-pip
+    - git
+    - dnsmasq
+  retries: 5
+  delay: 1
+  register: result
+  until: result|succeeded
+
+- name: Set low speed timeouts for git
+  shell: git config --global http.lowSpeedLimit 500 && git config --global http.lowSpeedTime 60
+
+- name: Uninstall old versions of docker
+  apt:
+    name: "{{item}}"
+    state: absent
+  with_items:
+    - docker
+    - docker-ce
+
+- name: Install Docker dependencies
+  apt:
+    name: "{{item}}"
+    state: present
+  with_items:
+    - apt-transport-https
+    - gnupg2
+    - software-properties-common
+  retries: 5
+  delay: 1
+  register: result
+  until: result|succeeded
+
+- name: setup docker repo
+  shell: curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
+
+- name: setup docker repo
+  shell: echo "deb [arch=armhf] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list
+
+- name: Install Docker
+  apt:
+    name: docker-ce
+    state: present
+  retries: 5
+  delay: 1
+  register: result
+  until: result|succeeded
+
+- name: Install docker-py
+  pip:
+    name: docker-py
+    state: latest
+    extra_args: --cert /LaitramScanSafe.crt --trusted-host pypi.python.org
+  retries: 5
+  delay: 1
+  register: result
+  until: result|succeeded

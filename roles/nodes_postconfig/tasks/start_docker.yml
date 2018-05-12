@@ -1,0 +1,13 @@
+- name: Ensures /etc/docker dir exists
+  file:
+    path: /etc/docker
+    state: directory
+
+- template:
+    src: daemon.json.j2
+    dest: /etc/docker/daemon.json
+
+- name: Bounce the docker daemon.
+  service:
+    name: docker
+    state: restarted

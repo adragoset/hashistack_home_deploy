@@ -1,0 +1,9 @@
+- fail:
+    msg: "Variable '{{ item }}' is not defined"
+  when: item not in vars
+  with_items:
+     - dns_server_ip
+     - docker_bridge_bip
+     - docker_bridge_bip_mask
+     - host_adapter_name
+     - go_env

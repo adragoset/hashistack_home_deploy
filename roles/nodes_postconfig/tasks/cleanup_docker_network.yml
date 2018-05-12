@@ -1,0 +1,6 @@
+- name: Delete the default docker bridge.
+  docker_network:
+    name: docker0
+    state: absent
+    force: yes
+

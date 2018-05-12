@@ -1,0 +1,21 @@
+- name: Ensures /root_ca dir exists
+  file:
+    path: /root_ca
+    state: directory
+
+- name: Ensures /root_ca/cluster-ca.pem exists
+  copy:
+    src: "../../../{{certificate_path}}/cluster-ca.pem"
+    dest: /root_ca/cluster-ca.pem
+    force: true
+
+- name: Ensures /root_ca/cluster-ca-key.pem exists
+  copy:
+    src: "../../../{{certificate_path}}/cluster-ca-key.pem"
+    dest: /root_ca/cluster-ca-key.pem
+    force: true
+
+- name: Copy the cert configuration
+  template:
+    src: cert_config.json.j2
+    dest: /root_ca/cert_config.json

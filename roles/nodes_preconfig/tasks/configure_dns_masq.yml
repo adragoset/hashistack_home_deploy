@@ -1,0 +1,16 @@
+- name: Copy Config /etc/dnsmasq.conf
+  template:
+    src: dns_masq.conf.j2
+    dest: /etc/dnsmasq.conf
+    force: yes
+
+- name: Bounce dnsmasq.
+  service:
+    name: dnsmasq
+    state: restarted
+
+- name: Overwrite resolv.conf
+  template:
+    src: resolv.conf.j2
+    dest: /etc/resolv.conf
+    force: yes

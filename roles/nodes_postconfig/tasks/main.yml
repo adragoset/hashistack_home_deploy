@@ -1,0 +1,6 @@
+- import_tasks: discover_vars.yml
+- import_tasks: start_docker.yml
+- import_tasks: build_docker_network.yml
+- import_tasks: set_docker_creds.yml
+- import_tasks: cleanup_docker_network.yml
+- import_tasks: copy_root_ca.yml

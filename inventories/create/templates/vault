@@ -1,0 +1,4 @@
+# vault docker image name
+vault_image_name: vault:0.9.5
+# User who will own vault configuration
+vault_config_owner: ansible

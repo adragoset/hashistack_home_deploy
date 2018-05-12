@@ -1,0 +1,14 @@
+- name: Docker hub credentials.
+  include_vars:
+    file: "../../../{{account_credentials_path}}/docker_hub_credentials.json"
+
+- fail:
+    msg: "Variable '{{ item }}' is not defined"
+  when: item not in vars
+  with_items:
+     - docker_creds
+     - certificate_path
+     - docker_bridge_bip
+     - docker_bridge_bip_mask
+     - docker_bridge_gateway
+

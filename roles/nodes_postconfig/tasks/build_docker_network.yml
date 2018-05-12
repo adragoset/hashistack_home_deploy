@@ -1,0 +1,8 @@
+- name: Create a network with options
+  docker_network:
+    name: cluster_network
+    driver_options:
+      com.docker.network.bridge.name: cl0
+    ipam_options:
+      subnet: "{{docker_bridge_bip}}/{{docker_bridge_bip_mask}}"
+      gateway: "{{docker_bridge_gateway}}"

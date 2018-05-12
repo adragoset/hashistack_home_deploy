@@ -1,0 +1,5 @@
+- name: Add the ansible user to the admin and sudo group
+  user:
+    name: "ansible"
+    groups: docker, sudo
+    state: present
