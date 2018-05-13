@@ -13,7 +13,7 @@
     - git
     - dnsmasq
     - build-essential
-    - resolveconf
+    - resolvconf
   retries: 5
   delay: 1
   register: result
