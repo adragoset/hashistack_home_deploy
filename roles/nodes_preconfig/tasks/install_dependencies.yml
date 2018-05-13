@@ -1,13 +1,6 @@
 - name: Add a bashrc
   shell: cp /etc/skel/.bashrc ~
 
-- name: Tell resolveconf to not overwrite.
-  lineinfile:
-    path: /etc/resolvconf.conf
-    regexp: resolvconf=NO
-    insertafter: EOF
-    line: resolvconf=NO
-
 - name: Install utility tools
   apt:
     name:  "{{item}}"
@@ -110,3 +103,10 @@
   delay: 1
   register: result
   until: result is succeeded
+
+- name: Tell resolveconf to not overwrite.
+  lineinfile:
+    path: /etc/resolvconf.conf
+    regexp: resolvconf=NO
+    insertafter: EOF
+    line: resolvconf=NO
