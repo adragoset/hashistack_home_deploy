@@ -9,6 +9,7 @@
     - python-pip
     - git
     - dnsmasq
+    - build-essentials
   retries: 5
   delay: 1
   register: result
