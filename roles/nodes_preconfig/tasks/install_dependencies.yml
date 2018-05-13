@@ -1,6 +1,6 @@
 - name: Add a bashrc
   shell: cp /etc/skel/.bashrc ~
-  
+
 - name: Install utility tools
   apt:
     name:  "{{item}}"
@@ -82,7 +82,7 @@
   shell: curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
 
 - name: setup docker repo
-  shell: echo "deb [arch=armhf] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list
+  shell: echo "deb [arch=armhf] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list && apt-get update
 
 - name: Install Docker
   apt:
@@ -91,7 +91,6 @@
   retries: 5
   delay: 1
   register: result
-  update_cache: yes
   until: result is succeeded
 
 - name: Install docker-py
