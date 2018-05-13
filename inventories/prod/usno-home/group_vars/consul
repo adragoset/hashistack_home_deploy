@@ -1,5 +1,5 @@
 # Consul docker image name
-consul_image_name:
+consul_image_name: devopsintralox/consul:v1.1.0_arm
 # User who will own consul configuration
 consul_config_owner: ansible
 # the ip address of a consul node that other consul servers will try to contact when bootstrapping

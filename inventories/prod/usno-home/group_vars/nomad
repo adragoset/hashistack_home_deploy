@@ -1,5 +1,5 @@
 # Nomad docker image name
-nomad_image_name:
+nomad_image_name: devopsintralox/nomad:v0.8.3_arm
 # User who will own nomad configuration
 nomad_config_owner: ansible
 # Is this nomad cluster authoritative true,false
