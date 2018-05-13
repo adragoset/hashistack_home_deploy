@@ -1,6 +1,9 @@
 ---
 # file: group_vars/all.yml
 
+ansible_connection=ssh 
+ansible_ssh_user=ansible
+
 # The username of the account all resources will be owned by
 user_name: ansible
 # The ip or hostname of the DNS server external to the cluster
