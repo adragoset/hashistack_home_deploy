@@ -79,10 +79,10 @@
   register: result
   until: result is succeeded
 
-- name: setup docker repo
+- name: Add docker gpg key
   shell: curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
 
-- name: setup docker repo
+- name: Setup docker repo
   shell: echo "deb [arch=armhf] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list && apt-get update
 
 - name: Install Docker
@@ -104,9 +104,12 @@
   register: result
   until: result is succeeded
 
-- name: Tell resolveconf to not overwrite.
+- name: Setup resolvconf base
   lineinfile:
-    path: /etc/resolvconf.conf
-    regexp: resolvconf=NO
+    path: /etc/resolvconf/resolv.conf.d/base
+    regexp: nameserver 127.0.0.1
     insertafter: EOF
-    line: resolvconf=NO
+    line: nameserver 127.0.0.1
+
+- name: Regenerate resolvconf
+  shell: resolvconf -u
