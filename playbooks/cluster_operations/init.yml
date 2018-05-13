@@ -1,5 +1,6 @@
 - name: Install common configuration.
   hosts: cluster
+  sudo: yes
 
   roles:
     - nodes_preconfig
