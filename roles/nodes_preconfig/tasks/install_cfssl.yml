@@ -15,21 +15,21 @@
 
 - name: Add GOROOT
   lineinfile:
-    path: /root/.bash_profile
+    path: ~/.bashrc
     regexp: export GOROOT=/usr/local/go
     insertafter: EOF
     line: export GOROOT=/usr/local/go
 
 - name: Add GOPATH
   lineinfile:
-    path: /root/.bash_profile
+    path: ~/.bashrc
     regexp: export GOPATH=$HOME/Go/Projects
     insertafter: EOF
     line: export GOPATH=$HOME/Go/Projects
 
 - name: Update PATH
   lineinfile:
-    path: /root/.bash_profile
+    path: ~/.bashrc
     regexp: export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
     insertafter: EOF
     line: export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
@@ -40,4 +40,4 @@
   retries: 5
   delay: 1
   register: result
-  until: result|succeeded
+  until: result is succeeded
