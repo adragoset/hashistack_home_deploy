@@ -3,8 +3,8 @@ nomad_image_name:
 # User who will own nomad configuration
 nomad_config_owner: ansible
 # Is this nomad cluster authoritative true,false
-is_authoritative:true
+is_authoritative: true
 # The region of the authoritative nomad cluster us-east
-nomad_authoritative_region:us-east
+nomad_authoritative_region: us-east
 # The replication token for replicating across nomad servers
 nomad_replication_token:

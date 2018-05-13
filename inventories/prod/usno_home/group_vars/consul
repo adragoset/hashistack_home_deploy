@@ -1,6 +1,0 @@
-# Consul docker image name
-consul_image_name:
-# User who will own consul configuration
-consul_config_owner: ansible
-# the ip address of a consul node that other consul servers will try to contact when bootstrapping
-consul_try_join_ip:192.168.2.70

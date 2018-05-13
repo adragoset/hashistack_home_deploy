@@ -2,13 +2,13 @@
 # file: group_vars/cluster.yml
 
 # cluster datacenter test-dc
-cluster_dc:usno-home
+cluster_dc: usno-home
 # cluster region us-east
-cluster_region:us-east
+cluster_region: us-east
 # Is this cluster an acl data center true,false
-acl_data_center:true
+acl_data_center: true
 # The name of this acl datacenter test-dc
-acl_datacenter_name:usno_home
+acl_datacenter_name: usno_home
 
 # path to the certificates folder secrets/development/test-dc/certificates
 certificate_path:
