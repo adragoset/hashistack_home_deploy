@@ -1,7 +1,3 @@
----
-- name: Configures all nodes from the default state and boostraps Consul,Vault,Nomad.
-  hosts: all
-
 - name: Install common configuration.
   hosts: cluster
 
