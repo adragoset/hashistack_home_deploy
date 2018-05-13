@@ -1,3 +1,6 @@
+- name: Add a bashrc
+  shell: cp /etc/skel/.bashrc ~
+  
 - name: Install utility tools
   apt:
     name:  "{{item}}"
@@ -100,6 +103,3 @@
   delay: 1
   register: result
   until: result is succeeded
-
-- name: Add a bashrc
-  shell: cp /etc/skel/.bashrc ~
