@@ -1,0 +1,25 @@
+---
+# file: group_vars/all.yml
+
+# The username of the account all resources will be owned by
+user_name: wildcard_infrastructure_admin
+# The ip or hostname of the DNS server external to the cluster
+dns_server_ip:8.8.8.8
+
+# The ip address range of the docker bridge x.x.x.0
+docker_bridge_bip: 192.168.85.0
+# The docker bridge gateway address x.x.x.1
+docker_bridge_gateway: 192.168.85.1
+# The docker bridge ip mask
+docker_bridge_bip_mask: 24
+# The name of the network adapter on the host machines ens192
+host_adapter_name:eth0
+
+# Go path env values
+go_env:
+    GOROOT: /usr/local/go
+    GOPATH: /root/Go/Projects
+    PATH: "/root/Go/Projects/bin:/usr/local/go/bin:{{ansible_env.PATH}}"
+
+# A shared folder that will be mounted to all hosts in the worker role
+app_folder_network_location:
