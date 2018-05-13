@@ -1,0 +1,10 @@
+# Nomad docker image name
+nomad_image_name:
+# User who will own nomad configuration
+nomad_config_owner: ansible
+# Is this nomad cluster authoritative true,false
+is_authoritative:
+# The region of the authoritative nomad cluster us-east
+nomad_authoritative_region:
+# The replication token for replicating across nomad servers
+nomad_replication_token:
