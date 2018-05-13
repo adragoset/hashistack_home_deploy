@@ -12,7 +12,7 @@
   retries: 5
   delay: 1
   register: result
-  until: result|succeeded
+  until: result is succeeded
 
 - name: Set low speed timeouts for git
   shell: git config --global http.lowSpeedLimit 500 && git config --global http.lowSpeedTime 60
@@ -36,7 +36,7 @@
   retries: 5
   delay: 1
   register: result
-  until: result|succeeded
+  until: result is succeeded
 
 - name: setup docker repo
   shell: curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
@@ -51,14 +51,15 @@
   retries: 5
   delay: 1
   register: result
-  until: result|succeeded
+  update_cache: yes
+  until: result is succeeded
 
 - name: Install docker-py
   pip:
     name: docker-py
     state: latest
-    extra_args: --cert /LaitramScanSafe.crt --trusted-host pypi.python.org
+    extra_args: --trusted-host pypi.python.org
   retries: 5
   delay: 1
   register: result
-  until: result|succeeded
+  until: result is succeeded
