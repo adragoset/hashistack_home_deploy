@@ -10,12 +10,12 @@ acl_data_center: true
 acl_datacenter_name: usno_home
 
 # path to the certificates folder secrets/development/test-dc/certificates
-certificate_path:
+certificate_path: secrets/prod/usno-home/certificates
 # path to the account_credentials folder secrets/development/test-dc/account_credentials
-account_credentials_path:
+account_credentials_path: secrets/prod/usno-home/account_credentials
 # path to the encryption_keys folder secrets/development/test-dc/encryption_keys
-encryption_keys_path:
+encryption_keys_path: secrets/prod/usno-home/encryption_keys
 # path to the acl_tokens folder secrets/development/test-dc/generated/acl_tokens
-acl_token_path:
+acl_token_path: secrets/prod/usno-home/generated/acl_tokens
 # path to the vault_unseal_keys folder secrets/development/test-dc/generated/vault_unseal_keys
-vault_unseal_keys_path:
+vault_unseal_keys_path: secrets/prod/usno-home/generated/vault_unseal_keys
