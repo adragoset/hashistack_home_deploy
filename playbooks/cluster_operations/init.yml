@@ -10,108 +10,108 @@
     - nodes_common
     - nodes_postconfig
 
-- name: Install worker configuration.
-  hosts: consul-clients
+# - name: Install worker configuration.
+#   hosts: consul-clients
 
-  roles:
-    - nodes_worker_config
+#   roles:
+#     - nodes_worker_config
 
-- name: Configure Consul servers.
-  hosts: consul-leader, consul-servers
+# - name: Configure Consul servers.
+#   hosts: consul-leader, consul-servers
 
-  roles:
-    - consul_common
-    - consul_server
+#   roles:
+#     - consul_common
+#     - consul_server
 
-- name: Configure Consul clients.
-  hosts: consul-clients
+# - name: Configure Consul clients.
+#   hosts: consul-clients
 
-  roles:
-    - consul_common
-    - consul_client
+#   roles:
+#     - consul_common
+#     - consul_client
 
-- name: Configure Consul anonymous ACL.
-  hosts: consul-leader
+# - name: Configure Consul anonymous ACL.
+#   hosts: consul-leader
 
-  roles:
-    - consul_prepare_anonymous_acls
+#   roles:
+#     - consul_prepare_anonymous_acls
 
-- name: Configure Consul server node ACL's.
-  hosts: consul-leader, consul-servers
+# - name: Configure Consul server node ACL's.
+#   hosts: consul-leader, consul-servers
 
-  roles:
-    - consul_prepare_server_acls
+#   roles:
+#     - consul_prepare_server_acls
 
-- name: Configure Consul client ACL's.
-  hosts: consul-clients
+# - name: Configure Consul client ACL's.
+#   hosts: consul-clients
 
-  roles:
-    - consul_prepare_client_acls
+#   roles:
+#     - consul_prepare_client_acls
 
-- name: Configure Vault servers.
-  hosts: vault
+# - name: Configure Vault servers.
+#   hosts: vault
 
-  roles:
-    - vault_server_common
-    - consul_prepare_vault_acls
-    - vault_server_start
+#   roles:
+#     - vault_server_common
+#     - consul_prepare_vault_acls
+#     - vault_server_start
 
-- name: Init the Vault.
-  hosts: vault-active
+# - name: Init the Vault.
+#   hosts: vault-active
 
-  roles:
-    - vault_server_init
+#   roles:
+#     - vault_server_init
 
-- name: Unseal the Vault servers.
-  hosts: vault-active, vault-standby
+# - name: Unseal the Vault servers.
+#   hosts: vault-active, vault-standby
 
-  roles:
-    - vault_server_unseal
+#   roles:
+#     - vault_server_unseal
 
-- name: Configure Nomad servers.
-  hosts: nomad-leader, nomad-servers
-  vars:
-    nomad_acl_type: server
+# - name: Configure Nomad servers.
+#   hosts: nomad-leader, nomad-servers
+#   vars:
+#     nomad_acl_type: server
 
-  roles:
-    - nomad_common
-    - consul_prepare_nomad_acls
-    - nomad_server
+#   roles:
+#     - nomad_common
+#     - consul_prepare_nomad_acls
+#     - nomad_server
 
-- name: Configure Nomad clients.
-  hosts: nomad-clients
-  vars:
-    nomad_acl_type: client
+# - name: Configure Nomad clients.
+#   hosts: nomad-clients
+#   vars:
+#     nomad_acl_type: client
 
-  roles:
-    - nomad_common
-    - consul_prepare_nomad_acls
-    - nomad_client
+#   roles:
+#     - nomad_common
+#     - consul_prepare_nomad_acls
+#     - nomad_client
 
-- name: Bootsrap Nomad and prepare ACL's.
-  hosts: nomad-leader
+# - name: Bootsrap Nomad and prepare ACL's.
+#   hosts: nomad-leader
 
-  roles:
-    - nomad_prepare_acls
+#   roles:
+#     - nomad_prepare_acls
 
-- import_playbook: ./../consul_operations/register_external_services.yml
+# - import_playbook: ./../consul_operations/register_external_services.yml
 
-- name: Mount Vault secret backends.
-  hosts: vault-active
+# - name: Mount Vault secret backends.
+#   hosts: vault-active
 
-  roles:
-    - vault_mount_secret_backends
+#   roles:
+#     - vault_mount_secret_backends
 
-- name: Store system certificates in vault.
-  hosts: vault-active
+# - name: Store system certificates in vault.
+#   hosts: vault-active
 
-  roles:
-    - vault_store_certificates
+#   roles:
+#     - vault_store_certificates
 
-- import_playbook: ./../deployment_jobs/update_all_jobs.yml
+# - import_playbook: ./../deployment_jobs/update_all_jobs.yml
 
-- name: Cleanup node installation artifacts.
-  hosts: cluster
+# - name: Cleanup node installation artifacts.
+#   hosts: cluster
 
-  roles:
-    - cleanup_after_install
+#   roles:
+#     - cleanup_after_install
