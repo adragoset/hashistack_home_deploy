@@ -1,4 +1,3 @@
----
 # file: group_vars/cluster.yml
 
 # cluster datacenter test-dc
