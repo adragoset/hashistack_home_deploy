@@ -1,6 +1,5 @@
 ansible_connection: ssh 
 ansible_ssh_user: ansible
-ansible_python_interpreter: /usr/bin/python3
 
 # The username of the account all resources will be owned by
 user_name: ansible
