@@ -1,0 +1,8 @@
+---
+- name: Stops all containers and removes all configuration resources for the cluster.
+  hosts: all
+  become: true
+  remote_user: wag_ansible_automation
+
+  roles:
+    - wipe_cluster

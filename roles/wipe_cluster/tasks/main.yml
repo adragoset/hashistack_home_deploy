@@ -1,0 +1,58 @@
+- name: Stop all containers
+  shell: docker stop $(docker ps -a -q) && docker rm $(docker ps -a -q)
+  ignore_errors: yes
+
+- name: Remove /consul_config
+  file:
+    state: absent
+    path: /consul_config
+
+- name: Remove /consul_data
+  file:
+    state: absent
+    path: /consul_data
+
+- name: Remove /nomad_config
+  file:
+    state: absent
+    path: /nomad_config
+
+- name: Remove /nomad
+  file:
+    state: absent
+    path: /nomad
+
+- name: Remove /vault_config
+  file:
+    state: absent
+    path: /vault_config
+
+- name: Remove /vault_logs
+  file:
+    state: absent
+    path: /vault_logs
+
+- name: Remove /data_dog
+  file:
+    state: absent
+    path: /data_dog
+
+- name: Remove /fetch_data
+  file:
+    state: absent
+    path: /fetch_data
+
+- name: Remove /root_ca
+  file:
+    state: absent
+    path: /root_ca
+
+- name: Stop the docker daemon.
+  service:
+    name: docker
+    state: stopped
+
+- name: Remove /etc/docker
+  file:
+    state: absent
+    path: /etc/docker
