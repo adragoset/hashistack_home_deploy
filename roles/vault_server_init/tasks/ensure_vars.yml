@@ -1,0 +1,7 @@
+- fail: 
+    msg: "Variable '{{ item }}' is not defined"
+  when: item not in vars
+  with_items:
+    - docker_bridge_bip
+    - vault_config_owner
+    - vault_unseal_keys_path

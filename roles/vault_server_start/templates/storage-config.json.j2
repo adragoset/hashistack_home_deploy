@@ -1,0 +1,14 @@
+{
+    "storage": {
+        "consul": {
+            "address": "127.0.0.1:8501",
+            "api_addr": "https://{{ansible_default_ipv4.address}}:8200",
+            "cluster_address": "https://{{ansible_default_ipv4.address}}:8201",
+            "scheme": "https",
+            "token": "{{vault_acl_id.ID}}",
+            "tls_ca_file": "/vault/config/ssl/cluster-ca.pem",
+            "tls_cert_file": "/vault/config/ssl/vault.pem",
+            "tls_key_file": "/vault/config/ssl/vault-key.pem"
+        }
+    } 
+}

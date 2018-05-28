@@ -27,23 +27,23 @@
     - consul_common
     - consul_client
 
-# - name: Configure Consul anonymous ACL.
-#   hosts: consul-leader
+- name: Configure Consul anonymous ACL.
+  hosts: consul-leader
 
-#   roles:
-#     - consul_prepare_anonymous_acls
+  roles:
+    - consul_prepare_anonymous_acls
 
-# - name: Configure Consul server node ACL's.
-#   hosts: consul-leader, consul-servers
+- name: Configure Consul server node ACL's.
+  hosts: consul-leader, consul-servers
 
-#   roles:
-#     - consul_prepare_server_acls
+  roles:
+    - consul_prepare_server_acls
 
-# - name: Configure Consul client ACL's.
-#   hosts: consul-clients
+- name: Configure Consul client ACL's.
+  hosts: consul-clients
 
-#   roles:
-#     - consul_prepare_client_acls
+  roles:
+    - consul_prepare_client_acls
 
 # - name: Configure Vault servers.
 #   hosts: vault

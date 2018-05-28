@@ -1,9 +1,9 @@
 - name: Set the consul client hostnames
   set_fact:
-    hostnames: "*.consul,consul.service.consul,*.node.{{cluster_dc}}.consul,{{ansible_hostname}},{{ansible_default_ipv4.address}},localhost,127.0.0.1,192.168.85.1"
+    hostnames: "*.consul,consul.service.consul,*.node.{{cluster_dc}}.consul,{{ansible_hostname}},{{ansible_default_ipv4.address}},localhost,127.0.0.1,{{docker_bridge_gateway}}"
 
 - name: Build Consul Client Certificate for host
-  shell: "echo '{\"CN\": \"consul-client.{{cluster_region}}.{{cluster_dc}}\", \"key\":{\"algo\":\"rsa\",\"size\":2048}, \"names\": [{\"C\": \"US\",\"L\": \"New Orleans\",\"O\": \"Intralox\",\"OU\": \"DX\"}]}' | cfssl gencert -ca=/root_ca/cluster-ca.pem -ca-key=/root_ca/cluster-ca-key.pem -config=/root_ca/cert_config.json -hostname={{hostnames}} - | cfssljson -bare /consul_config/ssl/consul"
+  shell: "echo '{\"CN\": \"consul-client.{{cluster_region}}.{{cluster_dc}}\", \"key\":{\"algo\":\"rsa\",\"size\":2048}, \"names\": [{\"C\": \"US\",\"L\": \"New Orleans\",\"O\": \"Dragoset Home\",\"OU\": \"DX\"}]}' | cfssl gencert -ca=/root_ca/cluster-ca.pem -ca-key=/root_ca/cluster-ca-key.pem -config=/root_ca/cert_config.json -hostname={{hostnames}} - | cfssljson -bare /consul_config/ssl/consul"
   environment: "{{go_env}}"
 
 - name: Update permissions for consul.pem

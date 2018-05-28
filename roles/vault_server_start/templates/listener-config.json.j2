@@ -1,0 +1,12 @@
+{
+    "listener": {
+        "tcp": {
+            "address": "0.0.0.0:8200",
+            "cluster_address": "{{ansible_default_ipv4.address}}:8201",
+            "tls_cert_file": "/vault/config/ssl/vault-ca.pem",
+            "tls_key_file": "/vault/config/ssl/vault-key.pem",
+            "tls_client_ca_file": "/vault/config/ssl/cluster-ca.pem",
+            "tls_require_and_verify_client_cert": true
+        }
+    }
+}

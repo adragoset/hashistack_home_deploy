@@ -1,0 +1,10 @@
+- fail:
+    msg: "Variable '{{ item }}' is not defined"
+  when: item not in vars
+  with_items:
+     - vault_image_name
+     - vault_config_owner
+     - certificate_path
+     - cluster_dc
+     - domain_suffix
+     - go_env

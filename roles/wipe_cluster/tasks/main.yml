@@ -2,6 +2,10 @@
   shell: docker stop $(docker ps -a -q) && docker rm $(docker ps -a -q)
   ignore_errors: yes
 
+- name: remove all images
+  shell: docker rmi $(docker images -a) -f
+  ignore_errors: yes
+
 - name: Remove /consul_config
   file:
     state: absent
@@ -12,15 +16,15 @@
     state: absent
     path: /consul_data
 
-- name: Remove /nomad_config
-  file:
-    state: absent
-    path: /nomad_config
+# - name: Remove /nomad_config
+#   file:
+#     state: absent
+#     path: /nomad_config
 
-- name: Remove /nomad
-  file:
-    state: absent
-    path: /nomad
+# - name: Remove /nomad
+#   file:
+#     state: absent
+#     path: /nomad
 
 - name: Remove /vault_config
   file:
@@ -31,11 +35,6 @@
   file:
     state: absent
     path: /vault_logs
-
-- name: Remove /data_dog
-  file:
-    state: absent
-    path: /data_dog
 
 - name: Remove /fetch_data
   file:

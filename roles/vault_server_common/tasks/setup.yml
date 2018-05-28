@@ -1,0 +1,59 @@
+- name: pull vault image
+  shell: "docker pull {{vault_image_name}}"
+  retries: 5
+  delay: 1
+  register: result
+  until: result|succeeded
+  become: false
+
+- name: Ensures /vault_logs dir exists
+  file:
+    path: /vault_logs
+    state: directory
+    owner: "{{vault_config_owner}}"
+    group: admin
+    mode: 0755
+
+- name: Ensures /vault_config dir exists
+  file:
+    path: /vault_config
+    state: directory
+    owner: "{{vault_config_owner}}"
+    group: admin
+    mode: 0755
+
+- name: Ensures /vault_config/ssl dir exists
+  file:
+    path: /vault_config/ssl
+    state: directory
+    owner: "{{vault_config_owner}}"
+    group: admin
+    mode: 0755
+
+- name: "Ensures /vault_config/ssl/vault-cli-key.pem exists"
+  copy:
+    src: "../../../{{certificate_path}}/vault/vault-cli-key.pem"
+    dest: /vault_config/ssl/vault-cli-key.pem
+    owner: "{{vault_config_owner}}"
+    group: admin
+    mode: 0755
+    force: true
+
+- name: Ensures /vault_config/ssl/vault-cli.pem exists
+  copy:
+    src: "../../../{{certificate_path}}/vault/vault-cli.pem"
+    dest: /vault_config/ssl/vault-cli.pem
+    owner: "{{vault_config_owner}}"
+    group: admin
+    mode: 0755
+    force: true
+
+- name: Ensures /vault_config/ssl/cluster-ca.pem exists
+  copy:
+    src: "/root_ca/cluster-ca.pem"
+    dest: /vault_config/ssl/cluster-ca.pem
+    owner: "{{vault_config_owner}}"
+    remote_src: yes
+    group: admin
+    mode: 0755
+    force: true

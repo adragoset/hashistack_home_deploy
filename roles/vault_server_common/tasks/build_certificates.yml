@@ -1,0 +1,34 @@
+- name: Set the consul hostnames
+  set_fact:
+    vault_hostnames: "vault.service.consul,*.node.{{cluster_dc}}.consul,{{ansible_hostname}},{{ansible_default_ipv4.address}},localhost,127.0.0.1,{{docker_bridge_gateway}}"
+
+- name: Build Vault Certificate for host
+  shell: "echo '{\"CN\": \"vault.{{cluster_region}}.{{cluster_dc}}\", \"key\":{\"algo\":\"rsa\",\"size\":2048}, \"names\": [{\"C\": \"US\",\"L\": \"New Orleans\",\"O\": \"Dragoset Home\",\"OU\": \"DX\"}]}' | cfssl gencert -ca=/root_ca/cluster-ca.pem -ca-key=/root_ca/cluster-ca-key.pem -config=/root_ca/cert_config.json -hostname={{vault_hostnames}} - | cfssljson -bare /vault_config/ssl/vault"
+  environment: "{{go_env}}"
+
+- name: Update permissions for vault.pem
+  file:
+    path: /vault_config/ssl/vault.pem
+    group: admin
+    mode: 0755
+
+- name: Update permissions for vault-key.pem
+  file:
+    path: /vault_config/ssl/vault-key.pem
+    group: admin
+    mode: 0755
+
+- name: Delete vault-ca.pem
+  file:
+    path: /vault_config/ssl/vault-ca.pem
+    state: absent
+
+- name: Touch vault-ca.pem
+  file:
+    path: /vault_config/ssl/vault-ca.pem
+    state: touch
+    group: admin
+    mode: 0755
+
+- name: Append certs to vault-ca.pem
+  shell: cat /vault_config/ssl/vault.pem >> /vault_config/ssl/vault-ca.pem && cat /root_ca/cluster-ca.pem >> /vault_config/ssl/vault-ca.pem

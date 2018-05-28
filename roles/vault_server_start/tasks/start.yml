@@ -1,0 +1,58 @@
+- name: Ensures /vault_config/root-config.json exists
+  template:
+    src: root-config.json.j2
+    dest: /vault_config/root-config.json
+    owner: "{{vault_config_owner}}"
+    group: admin
+    mode: 0755
+    force: true
+
+- name: Ensures /vault_config/listener-config.json exists
+  template:
+    src: listener-config.json.j2
+    dest: /vault_config/listener-config.json
+    owner: "{{vault_config_owner}}"
+    group: admin
+    mode: 0755
+    force: true
+
+- name: Ensures /vault_config/storage-config.json exists
+  template:
+    src: storage-config.json.j2
+    dest: /vault_config/storage-config.json
+    owner: "{{vault_config_owner}}"
+    group: admin
+    mode: 0755
+    force: true
+
+- name: Check if Consul is Operational
+  uri:
+    url: "https://consul.service.consul:8501/v1/health/node/{{ansible_hostname}}"
+    method: GET
+    client_cert: /vault_config/ssl/vault-cli.pem
+    client_key: /vault_config/ssl/vault-cli-key.pem
+    validate_certs: no
+    status_code: 200
+    body_format: json
+
+- name: Stop and remove the old vault server container
+  docker:
+    name: vault_server
+    image: "{{vault_image_name}}"
+    state: absent
+
+- name: Start vault client container
+  shell: >
+    docker run --cap-add=IPC_LOCK -d --name vault_server --net host --restart unless-stopped
+    -v /vault_config:/vault/config:Z
+    -v /vault_logs:/vault/logs:Z
+    -e 'VAULT_ADDR=https://localhost:8200'
+    -e 'CONSUL_CACERT=/vault/config/ssl/cluster-ca.pem'
+    -e 'CONSUL_CLIENT_CERT=/vault/config/ssl/vault-cli.pem'
+    -e 'CONSUL_CLIENT_KEY=/vault/config/ssl/vault-cli-key.pem'
+    -e 'NOMAD_CACERT=/vault/config/ssl/cluster-ca.pem'
+    -e 'NOMAD_CLIENT_CERT=/vault/config/ssl/vault-cli.pem'
+    -e 'NOMAD_CLIENT_KEY=/vault/config/ssl/vault-cli-key.pem'
+    -e 'VAULT_CACERT=/vault/config/ssl/cluster-ca.pem'
+    -e 'VAULT_CLIENT_CERT=/vault/config/ssl/vault-cli.pem'
+    -e 'VAULT_CLIENT_KEY=/vault/config/ssl/vault-cli-key.pem' {{vault_image_name}} server

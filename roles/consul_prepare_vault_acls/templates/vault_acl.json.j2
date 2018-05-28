@@ -1,0 +1,8 @@
+{
+    {% if vault_acl_id is defined %}
+    "ID": "vault_agent_token_{{ansible_hostname}}",
+    {% endif %}
+    "Name": "vault_acl",
+    "Type": "client",
+    "Rules": "node \"\" { policy = \"read\" } node \"{{ansible_hostname}}\" { policy = \"write\" } service \"vault\" { policy = \"write\" } key \"vault\" { policy = \"write\" } agent \"\" { policy = \"write\" } session \"\" { policy = \"write\" }"
+}

@@ -1,0 +1,10 @@
+- fail: 
+    msg: "Variable '{{ item }}' is not defined"
+  when: item not in vars
+  with_items:
+     - external_ip
+     - docker_bridge_bip
+     - vault_image_name
+     - vault_config_owner
+     - certificate_path
+     - acl_token_path

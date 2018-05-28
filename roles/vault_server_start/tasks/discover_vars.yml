@@ -1,0 +1,12 @@
+- name: Set fact external_ip
+  set_fact:
+    external_ip: "{{ansible_default_ipv4.address}}"
+
+- name: Set fact hostname
+  set_fact:
+    hostname: "{{ ansible_hostname }}"
+
+- name: Load the vault_acl_token ID
+  include_vars:
+    file: "../../../{{acl_token_path}}/{{ansible_hostname}}_vault_acl.json"
+    name: vault_acl_id

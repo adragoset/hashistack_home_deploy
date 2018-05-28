@@ -1,0 +1,3 @@
+- name: Load acl_data_center_master_token encryption key.
+  include_vars:
+    file: "../../../{{encryption_keys_path}}/consul/acl_datacenter_master_token.json"

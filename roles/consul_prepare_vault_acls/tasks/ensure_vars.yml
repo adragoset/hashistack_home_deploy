@@ -1,0 +1,19 @@
+- fail: 
+    msg: "Variable '{{ item }}' is not defined"
+  when: item not in vars
+  with_items: 
+     - acl_datacenter_master_token
+     - acl_token_path
+     - vault_config_owner
+
+- name: Check if Consul is Operational
+  uri:
+    url: "https://consul.service.consul:8501/v1/health/node/{{ansible_hostname}}"
+    method: GET
+    client_cert: /consul_config/ssl/consul-cli.pem
+    client_key: /consul_config/ssl/consul-cli-key.pem
+    validate_certs: no
+    status_code: 200
+    headers:
+      X-Consul-Token: "{{acl_datacenter_master_token}}"
+    body_format: json

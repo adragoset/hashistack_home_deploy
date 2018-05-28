@@ -1,0 +1,83 @@
+- name: Ensures /fetch_data dir exists
+  file:
+    path: /fetch_data
+    state: directory
+    owner: "{{vault_config_owner}}"
+    group: admin
+    mode: 0755
+
+- name: Ensures /fetch_data/vault dir exists
+  file:
+    path: /fetch_data/vault
+    state: directory
+    owner: "{{vault_config_owner}}"
+    group: admin
+    mode: 0755
+
+- name: Load the existing acl policies
+  uri:
+    url: "https://localhost:8501/v1/acl/list"
+    method: GET
+    client_cert: /consul_config/ssl/consul-cli.pem
+    client_key: /consul_config/ssl/consul-cli-key.pem
+    validate_certs: no
+    status_code: 200
+    headers:
+      X-Consul-Token: "{{acl_datacenter_master_token}}"
+    body_format: json
+    return_content: yes
+  register: acls
+
+- name: Set the vault_acl_name = vault_acl
+  set_fact:
+    vault_acl_name: vault_agent_token_{{ansible_hostname}}
+
+- name: Set the acl fetch path.
+  set_fact:
+    acl_fetch_path: "../../{{acl_token_path}}/{{ansible_hostname}}_vault_acl.json"
+
+- name: Create vault acl policy
+  uri:
+    url: "https://localhost:8501/v1/acl/create"
+    method: PUT
+    client_cert: /consul_config/ssl/consul-cli.pem
+    client_key: /consul_config/ssl/consul-cli-key.pem
+    validate_certs: no
+    status_code: 200
+    headers:
+      X-Consul-Token: "{{acl_datacenter_master_token}}"
+    body: "{{ lookup('template', 'vault_acl.json.j2') }}"
+    body_format: json
+    return_content: yes
+    dest: /fetch_data/vault/vault_acl.json
+  when: vault_acl_name not in acls.json|map(attribute='Name')|list|unique
+
+- name: Fetch the acl policy for vault.
+  fetch:
+    flat: yes
+    src: /fetch_data/vault/vault_acl.json
+    dest: "{{acl_fetch_path}}"
+  when: vault_acl_name not in acls.json|map(attribute='Name')|list|unique
+
+- name: Load the vault_acl_token ID
+  include_vars:
+    file: "../../../{{acl_token_path}}/vault_acl.json"
+    name: vault_acl_id
+  when: vault_acl_name in acls.json|map(attribute='Name')|list|unique
+
+- name: Update vault acl policy
+  uri:
+    url: "https://localhost:8501/v1/acl/update"
+    method: PUT
+    client_cert: /consul_config/ssl/consul-cli.pem
+    client_key: /consul_config/ssl/consul-cli-key.pem
+    validate_certs: no
+    status_code: 200
+    headers:
+      X-Consul-Token: "{{acl_datacenter_master_token}}"
+    body: "{{ lookup('template', 'vault_acl.json.j2') }}"
+    body_format: json
+    return_content: yes
+    dest: /fetch_data/vault/vault_acl.json
+  when: vault_acl_name in acls.json|map(attribute='Name')|list|unique
+

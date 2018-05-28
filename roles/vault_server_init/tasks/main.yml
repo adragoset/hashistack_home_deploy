@@ -1,0 +1,84 @@
+- import_tasks: ensure_vars.yml
+
+- name: Ensures /fetch_data dir exists
+  file:
+    path: /fetch_data
+    state: directory
+    owner: "{{vault_config_owner}}"
+    group: admin
+    mode: 0755
+
+- name: Ensures /fetch_data/vault dir exists
+  file:
+    path: /fetch_data/vault
+    state: directory
+    owner: "{{vault_config_owner}}"
+    group: admin
+    mode: 0755
+
+- name: Check if vault is initialized
+  uri:
+    url: https://{{docker_bridge_gateway}}:8200/v1/sys/init
+    method: GET
+    client_cert: /vault_config/ssl/vault-cli.pem
+    client_key: /vault_config/ssl/vault-cli-key.pem
+    validate_certs: no
+    return_content: yes
+    status_code: 200
+    body_format: json
+  register: vault_init_status
+  until: vault_init_status.status == 200
+  retries: 5
+  delay: 5
+
+- fail:
+    msg: "Variable '{{ item }}' is not defined"
+  when: item not in vars
+  with_items:
+    - vault_init_status
+
+- fail:
+    msg: "Variable vault_init_status.initialized is not defined"
+  when: vault_init_status.json.initialized is undefined
+
+- debug:
+    msg: "Vault init status: {{vault_init_status.json.initialized}}"
+
+- name: Init Vault
+  uri:
+    url: https://{{docker_bridge_gateway}}:8200/v1/sys/init
+    method: PUT
+    client_cert: /vault_config/ssl/vault-cli.pem
+    client_key: /vault_config/ssl/vault-cli-key.pem
+    validate_certs: no
+    body: "{ \"secret_shares\": 5, \"secret_threshold\": 3 }"
+    dest: /fetch_data/vault/unseal_keys.json
+    status_code: 200
+    body_format: json
+  when: vault_init_status.json.initialized == False
+
+- name: Fetch vault unseal keys
+  fetch:
+    flat: yes
+    src: /fetch_data/vault/unseal_keys.json
+    dest: "../../{{vault_unseal_keys_path}}/unseal_keys.json"
+  when: vault_init_status.json.initialized == False
+
+- name: Check if vault is initialized
+  uri:
+    url: https://{{docker_bridge_gateway}}:8200/v1/sys/init
+    method: GET
+    client_cert: /vault_config/ssl/vault-cli.pem
+    client_key: /vault_config/ssl/vault-cli-key.pem
+    validate_certs: no
+    return_content: yes
+    status_code: 200
+    body_format: json
+  register: vault_init_status_final
+  when: vault_init_status.json.initialized == False
+
+
+- fail:
+    msg: "Vault was not initialized"
+  when: vault_init_status.json.initialized == False and vault_init_status_final.json.initialized == False
+

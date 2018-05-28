@@ -1,0 +1,61 @@
+- name: Check if vault is unsealed
+  uri:
+    url: https://{{docker_bridge_gateway}}:8200/v1/sys/seal-status
+    method: GET
+    client_cert: /vault_config/ssl/vault-cli.pem
+    client_key: /vault_config/ssl/vault-cli-key.pem
+    validate_certs: no
+    return_content: yes
+    status_code: 200
+    body_format: json
+  register: seal_status
+
+- debug:
+    msg: "Seal status: {{ seal_status.json }}"
+
+- name: Unseal_1 Vault
+  uri:
+    url: https://{{docker_bridge_gateway}}:8200/v1/sys/unseal
+    method: PUT
+    client_cert: /vault_config/ssl/vault-cli.pem
+    client_key: /vault_config/ssl/vault-cli-key.pem
+    validate_certs: no
+    body: "{ \"key\": \"{{vault_unseal_keys.keys_base64[0]}}\" }"
+    status_code: 200
+    body_format: json
+  when: seal_status.json.sealed == True
+
+- name: Unseal_2 Vault
+  uri:
+    url: https://{{docker_bridge_gateway}}:8200/v1/sys/unseal
+    method: PUT
+    client_cert: /vault_config/ssl/vault-cli.pem
+    client_key: /vault_config/ssl/vault-cli-key.pem
+    validate_certs: no
+    body: "{ \"key\": \"{{vault_unseal_keys.keys_base64[1]}}\" }"
+    status_code: 200
+    body_format: json
+  when: seal_status.json.sealed == True
+
+- name: Unseal_3 Vault
+  uri:
+    url: https://{{docker_bridge_gateway}}:8200/v1/sys/unseal
+    method: PUT
+    client_cert: /vault_config/ssl/vault-cli.pem
+    client_key: /vault_config/ssl/vault-cli-key.pem
+    validate_certs: no
+    body: "{ \"key\": \"{{vault_unseal_keys.keys_base64[2]}}\" }"
+    status_code: 200
+    body_format: json
+  when: seal_status.json.sealed == True
+
+- name: Check if vault is Operational
+  uri:
+    url: https://vault.service.consul:8200/v1/sys/health
+    method: GET
+    client_cert: /vault_config/ssl/vault-cli.pem
+    client_key: /vault_config/ssl/vault-cli-key.pem
+    validate_certs: no
+    return_content: yes
+    status_code: 200, 429
+    body_format: json
