@@ -7,25 +7,25 @@
     - nodes_common
     - nodes_postconfig
 
-# - name: Install worker configuration.
-#   hosts: consul-clients
+- name: Install worker configuration.
+  hosts: consul-clients
 
-#   roles:
-#     - nodes_worker_config
+  roles:
+     - nodes_worker_config
 
-# - name: Configure Consul servers.
-#   hosts: consul-leader, consul-servers
+- name: Configure Consul servers.
+  hosts: consul-leader, consul-servers
+  
+  roles:
+     - consul_common
+     - consul_server
 
-#   roles:
-#     - consul_common
-#     - consul_server
+- name: Configure Consul clients.
+  hosts: consul-clients
 
-# - name: Configure Consul clients.
-#   hosts: consul-clients
-
-#   roles:
-#     - consul_common
-#     - consul_client
+  roles:
+    - consul_common
+    - consul_client
 
 # - name: Configure Consul anonymous ACL.
 #   hosts: consul-leader

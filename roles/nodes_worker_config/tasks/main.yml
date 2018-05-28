@@ -1,0 +1,36 @@
+- import_tasks: ensure_vars.yml
+
+- name: Install samba/cifs tools
+  yum:
+    name:  "{{item}}"
+    state: present
+  with_items:
+    - samba-client
+    - samba-common
+    - cifs-utils
+  retries: 5
+  delay: 1
+  register: result
+  until: result|succeeded
+
+- name: Copy the smbcred file
+  template:
+    src: smbcred.j2
+    dest: /home/ansible/smbcred
+    force: yes
+  when: app_folder_network_location is defined and app_folder_network_location != '' 
+
+- file:
+    path: /mnt/app_data
+    state: directory
+    mode: 0777
+
+- name: Mount shared app folder on workers.
+  mount:
+    path: /mnt/app_data
+    src: "{{app_folder_network_location}}"
+    opts: "credentials=/home/ansible/smbcred,dir_mode=0777,file_mode=0777,uid=0,gid=0"
+    fstype: cifs
+    fstab: /etc/fstab
+    state: mounted
+  when: app_folder_network_location is defined and app_folder_network_location != '' 

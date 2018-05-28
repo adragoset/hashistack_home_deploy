@@ -22,5 +22,7 @@ go_env:
     GOPATH: /root/Go/Projects
     PATH: "/root/Go/Projects/bin:/usr/local/go/bin:{{ansible_env.PATH}}"
 
+domain:
+
 # A shared folder that will be mounted to all hosts in the worker role
 app_folder_network_location:

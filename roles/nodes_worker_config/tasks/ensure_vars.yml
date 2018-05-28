@@ -1,0 +1,10 @@
+- fail:
+    msg: "Variable '{{ item }}' is not defined"
+  when: item not in vars
+  with_items:
+     - app_folder_network_location
+     - account_credentials_path
+
+- name: Load app folder smb credentials.
+  include_vars:
+    file: ../../../{{account_credentials_path}}/app_folder_smb_credentials.json
