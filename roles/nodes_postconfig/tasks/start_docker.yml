@@ -10,4 +10,5 @@
 - name: Bounce the docker daemon.
   service:
     name: docker
+    enabled: yes
     state: restarted

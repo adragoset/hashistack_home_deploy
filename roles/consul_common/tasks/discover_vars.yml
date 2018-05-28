@@ -1,0 +1,9 @@
+- fail:
+    msg: "Variable '{{ item }}' is not defined"
+  when: item not in vars
+  with_items:
+     - encryption_keys_path
+
+- name: Load Consul Serf encryption key.
+  include_vars:
+    file: "../../../{{encryption_keys_path}}/consul/consul_serf_key.json"

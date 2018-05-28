@@ -1,0 +1,8 @@
+{
+    {% if consul_acl_id is defined %}
+    "ID": "{{consul_acl_id.ID}}",
+    {% endif %}
+    "Name": "consul_agent_token_{{ansible_hostname}}",
+    "Type": "client",
+    "Rules": "node \"\" { policy = \"write\" } agent \"\" { policy = \"write\"} service \"\" { policy = \"write\" } key \"\" { policy = \"write\" } event \"\" { policy = \"write\" }"
+}

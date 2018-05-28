@@ -1,0 +1,26 @@
+- name: Stop and remove the old consul client container
+  docker:
+    name: consul_client
+    image: consul
+    state: absent
+
+- name: Copy consul client config
+  template:
+    src: consul_client_config.json.j2
+    dest: /consul_config/consul_config.json
+    owner: "{{consul_config_owner}}"
+    group: admin
+    mode: 0755
+    force: yes
+
+- name: Start consul client container
+  shell: >
+    docker run -d --net=host --restart unless-stopped
+    -v /consul_config:/consul/config:Z
+    -v /var/run/docker.sock:/var/run/docker.sock
+    -e 'CONSUL_HTTP_ADDR=127.0.0.1:8501'
+    -e 'CONSUL_HTTP_SSL=true'
+    -e 'CONSUL_CACERT=/consul/config/ssl/cluster-ca.pem'
+    -e 'CONSUL_CLIENT_CERT=/consul/config/ssl/consul-cli.pem'
+    -e 'CONSUL_CLIENT_KEY=/consul/config/ssl/consul-cli-key.pem'
+    --name=consul_client {{consul_image_name}} agent -bind={{external_ip}} -retry-join={{consul_try_join_ip}}

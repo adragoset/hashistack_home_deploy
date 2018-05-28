@@ -1,0 +1,9 @@
+- fail: 
+    msg: "Variable '{{ item }}' is not defined"
+  when: item not in vars
+  with_items:
+     - certificate_path 
+     - consul_image_name
+     - consul_config_owner
+     - consul_encrypt_key
+     - cluster_dc

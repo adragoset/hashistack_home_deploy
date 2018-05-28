@@ -1,0 +1,48 @@
+- name: Stop and remove the old consul leader container
+  docker:
+    name: consul_server
+    image: consul
+    state: absent
+
+- name: Copy Docker consul_config.json
+  template:
+    src: consul_server_config.json.j2
+    dest: /consul_config/consul_config.json
+    owner: "{{consul_config_owner}}"
+    group: admin
+    mode: 0755
+    force: yes
+
+
+- name: Ensures /consul_data dir exists
+  file:
+    path: /consul_data
+    state: directory
+    owner: "{{consul_config_owner}}"
+    group: admin
+    mode: 0755
+
+- debug:
+    msg: >
+      docker run -d --net=host
+      -v /consul_config:/consul/config:Z
+      -v /consul_data:/consul/data:Z
+      -e 'CONSUL_HTTP_ADDR=127.0.0.1:8501'
+      -e 'CONSUL_HTTP_SSL=true'
+      -e 'CONSUL_CACERT=/consul/config/ssl/cluster-ca.pem'
+      -e 'CONSUL_CLIENT_CERT=/consul/config/ssl/consul-cli.pem'
+      -e 'CONSUL_CLIENT_KEY=/consul/config/ssl/consul-cli-key.pem'
+      --name=consul_server consul agent -server -bind={{external_ip}} -retry-join={{consul_try_join_ip}}
+
+- name: Start consul server container
+  shell: >
+    docker run -d --net=host --restart unless-stopped
+    -v /consul_config:/consul/config:Z
+    -v /consul_data:/consul/data:Z
+    -e 'CONSUL_HTTP_ADDR=127.0.0.1:8501'
+    -e 'CONSUL_HTTP_SSL=true'
+    -e 'CONSUL_CACERT=/consul/config/ssl/cluster-ca.pem'
+    -e 'CONSUL_CLIENT_CERT=/consul/config/ssl/consul-cli.pem'
+    -e 'CONSUL_CLIENT_KEY=/consul/config/ssl/consul-cli-key.pem'
+    --name=consul_server {{consul_image_name}} agent -server -bind={{external_ip}} -retry-join={{consul_try_join_ip}}
+

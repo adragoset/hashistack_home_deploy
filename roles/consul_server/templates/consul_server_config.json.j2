@@ -1,0 +1,34 @@
+{
+    "skip_leave_on_interrupt": false,
+    "bootstrap_expect": 3,
+    "ports": {
+        "http": -1,
+        "https": 8501
+    },
+    "enable_script_checks": true,
+    "checks": [
+        {
+            "name": "Memory Utilization",
+            "script": "/consul/config/health_checks/mem_check.sh",
+            "interval": "15s"
+        },
+        {
+            "name": "Disk Utilization",
+            "script": "/consul/config/health_checks/sda_check.sh",
+            "interval": "60s"
+        }
+    ],
+    "addresses" : {
+        "https": "{{external_ip}} 127.0.0.1 {{docker_bridge_gateway}}",
+        "dns": "{{external_ip}} 127.0.0.1"
+    },
+    {% if acl_data_center %}
+    "acl_master_token": "{{acl_datacenter_master_token}}",
+    {% endif %}
+    "acl_datacenter": "{{acl_datacenter_name}}",
+    "acl_default_policy": "deny",
+    "acl_down_policy": "deny",
+    "verify_incoming": true,
+    "verify_outgoing": true,
+    "recursors": ["127.0.0.1"]
+}

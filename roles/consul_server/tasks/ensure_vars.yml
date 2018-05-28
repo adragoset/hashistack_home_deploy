@@ -1,0 +1,11 @@
+- fail:
+    msg: "Variable '{{ item }}' is not defined"
+  when: item not in vars
+  with_items:
+     - dns_server_ip
+     - consul_config_owner
+     - consul_try_join_ip
+     - cluster_dc
+     - acl_data_center
+     - acl_datacenter_name
+     - go_env

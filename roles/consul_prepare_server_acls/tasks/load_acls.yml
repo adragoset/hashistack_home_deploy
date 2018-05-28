@@ -1,0 +1,111 @@
+- name: Ensures /fetch_data dir exists
+  file:
+    path: /fetch_data
+    state: directory
+    owner: "{{consul_config_owner}}"
+    group: admin
+    mode: 0755
+
+- name: Ensures /fetch_data/consul dir exists
+  file:
+    path: /fetch_data/consul
+    state: directory
+    owner: "{{consul_config_owner}}"
+    group: admin
+    mode: 0755
+
+- name: Load the existing acl policies
+  uri:
+    url: "https://localhost:8501/v1/acl/list"
+    method: GET
+    client_cert: /consul_config/ssl/consul-cli.pem
+    client_key: /consul_config/ssl/consul-cli-key.pem
+    validate_certs: no
+    status_code: 200
+    headers:
+      X-Consul-Token: "{{acl_datacenter_master_token}}"
+    body_format: json
+    return_content: yes
+  register: acls
+
+- name: display current acls
+  debug:
+    msg: "{{acls.json}}"
+
+- name: Set the consul_acl_name = consul_acl
+  set_fact:
+    consul_acl_name: "consul_server_token_{{ansible_hostname}}"
+
+- name: Set the acl fetch path.
+  set_fact:
+    acl_fetch_path: "../../{{acl_token_path}}/consul/{{ansible_hostname}}_server_consul_acl.json"
+
+- name: Create consul acl policy
+  uri:
+    url: "https://localhost:8501/v1/acl/create"
+    method: PUT
+    client_cert: /consul_config/ssl/consul-cli.pem
+    client_key: /consul_config/ssl/consul-cli-key.pem
+    validate_certs: no
+    status_code: 200
+    headers:
+      X-Consul-Token: "{{acl_datacenter_master_token}}"
+    body: "{{ lookup('template', 'consul_acl.json.j2') }}"
+    body_format: json
+    return_content: yes
+    dest: "/fetch_data/consul/{{ansible_hostname}}_server_consul_acl.json"
+  when: consul_acl_name not in acls.json|map(attribute='Name')|list|unique
+
+- name: Fetch the acl policy for consul.
+  fetch:
+    flat: yes
+    src: "/fetch_data/consul/{{ansible_hostname}}_server_consul_acl.json"
+    dest: "{{acl_fetch_path}}"
+  when: consul_acl_name not in acls.json|map(attribute='Name')|list|unique
+
+- name: Load the consul_acl_token ID
+  include_vars:
+    file: "../../../{{acl_token_path}}/consul/{{ansible_hostname}}_server_consul_acl.json"
+    name: consul_acl_id
+
+
+- name: Update consul acl policy
+  uri:
+    url: "https://localhost:8501/v1/acl/update"
+    method: PUT
+    client_cert: /consul_config/ssl/consul-cli.pem
+    client_key: /consul_config/ssl/consul-cli-key.pem
+    validate_certs: no
+    status_code: 200
+    headers:
+      X-Consul-Token: "{{acl_datacenter_master_token}}"
+    body: "{{ lookup('template', 'consul_acl.json.j2') }}"
+    body_format: json
+  when: consul_acl_name in acls.json|map(attribute='Name')|list|unique
+
+- name: Set consul acl_agent_token policy on server host
+  uri:
+    url: "https://localhost:8501/v1/agent/token/acl_agent_token"
+    method: PUT
+    client_cert: /consul_config/ssl/consul-cli.pem
+    client_key: /consul_config/ssl/consul-cli-key.pem
+    validate_certs: no
+    status_code: 200
+    headers:
+      X-Consul-Token: "{{acl_datacenter_master_token}}"
+    body: "{ \"Token\": \"{{consul_acl_id.ID}}\" }"
+    body_format: json
+
+- name: Set consul acl_token policy on server host
+  uri:
+    url: "https://localhost:8501/v1/agent/token/acl_token"
+    method: PUT
+    client_cert: /consul_config/ssl/consul-cli.pem
+    client_key: /consul_config/ssl/consul-cli-key.pem
+    validate_certs: no
+    status_code: 200
+    headers:
+      X-Consul-Token: "{{acl_datacenter_master_token}}"
+    body: "{ \"Token\": \"{{consul_acl_id.ID}}\" }"
+    body_format: json
+

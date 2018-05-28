@@ -1,0 +1,93 @@
+- name: "Pull {{consul_image_name}}"
+  shell: "docker pull {{consul_image_name}}"
+  retries: 5
+  delay: 1
+  register: result
+  until: result|succeeded
+
+- name: Ensures /consul_config dir exists
+  file:
+    path: /consul_config
+    state: directory
+    owner: "{{consul_config_owner}}"
+    group: admin
+    mode: 0755
+
+- name: Ensures /consul_config/ssl dir exists
+  file:
+    path: /consul_config/ssl
+    state: directory
+    owner: "{{consul_config_owner}}"
+    group: admin
+    mode: 0755
+
+- name: Ensures /consul_config/ssl/cluster-ca.pem exists
+  copy:
+    src: "/root_ca/cluster-ca.pem"
+    dest: /consul_config/ssl/cluster-ca.pem
+    owner: "{{consul_config_owner}}"
+    remote_src: yes
+    group: admin
+    mode: 0755
+    force: true
+
+- name: Ensures /consul_config/ssl/consul-cli.pem exists
+  copy:
+    src: "../../../{{certificate_path}}/consul/consul-cli.pem"
+    dest: /consul_config/ssl/consul-cli.pem
+    owner: "{{consul_config_owner}}"
+    group: admin
+    mode: 0755
+    force: yes
+
+- name: Ensures /consul_config/ssl/consul-cli-key.pem exists
+  copy:
+    src: "../../../{{certificate_path}}/consul/consul-cli-key.pem"
+    dest: /consul_config/ssl/consul-cli-key.pem
+    owner: "{{consul_config_owner}}"
+    group: admin
+    mode: 0755
+    force: yes
+
+- name: Copy datacenter info config
+  template:
+    src: dc_info.json.j2
+    dest: /consul_config/dc_info.json
+    owner: "{{consul_config_owner}}"
+    group: admin
+    mode: 0755
+
+- name: Copy encrypt config
+  template:
+    src: encrypt.json.j2
+    dest: /consul_config/encrypt.json
+    owner: "{{consul_config_owner}}"
+    group: admin
+    mode: 0755
+
+- name: Ensures /consul_config/health_checks dir exists
+  file:
+    path: /consul_config/health_checks
+    state: directory
+    owner: "{{consul_config_owner}}"
+    group: admin
+    mode: 0755
+
+- name: Ensures /consul_config/health_checks/memcheck.sh exists
+  copy:
+    src: mem_check.sh
+    dest: /consul_config/health_checks/mem_check.sh
+    owner: "{{consul_config_owner}}"
+    group: admin
+    mode: 0755
+    force: yes
+
+- name: Ensures /consul_config/health_checks/sda_check.sh exists
+  copy:
+    src: sda_check.sh
+    dest: /consul_config/health_checks/sda_check.sh
+    owner: "{{consul_config_owner}}"
+    group: admin
+    mode: 0755
+    force: yes
+

@@ -1,0 +1,74 @@
+- name: Ensures /fetch_data dir exists
+  file:
+    path: /fetch_data
+    state: directory
+    owner: "{{consul_config_owner}}"
+    group: admin
+    mode: 0755
+
+- name: Ensures /fetch_data dir exists
+  file:
+    path: /fetch_data/consul
+    state: directory
+    owner: "{{consul_config_owner}}"
+    group: admin
+    mode: 0755
+
+- name: Update anonymous acl policy
+  uri:
+    url: "https://localhost:8501/v1/acl/update"
+    method: PUT
+    client_cert: /consul_config/ssl/consul-cli.pem
+    client_key: /consul_config/ssl/consul-cli-key.pem
+    validate_certs: no
+    status_code: 200
+    headers:
+      X-Consul-Token: "{{acl_datacenter_master_token}}"
+    body: "{{ lookup('template','anonymous_acl.json.j2') }}"
+    body_format: json
+
+- name: Load the existing acl policies
+  uri:
+    url: "https://localhost:8501/v1/acl/list"
+    method: GET
+    client_cert: /consul_config/ssl/consul-cli.pem
+    client_key: /consul_config/ssl/consul-cli-key.pem
+    validate_certs: no
+    status_code: 200
+    headers:
+      X-Consul-Token: "{{acl_datacenter_master_token}}"
+    body_format: json
+    return_content: yes
+  register: acls
+
+- name: Set the consul_mngmnt_name = consul_mngmnt
+  set_fact:
+    consul_mngmnt_acl_name: "consul_mngmnt"
+
+- name: Set the mngmnt acl fetch path.
+  set_fact:
+    consul_mngmnt_acl_fetch_path: "../../{{acl_token_path}}/consul_vault_mngmnt_acl.json"
+
+- name: Create consul vault mngmnt acl policy
+  uri:
+    url: "https://localhost:8501/v1/acl/create"
+    method: PUT
+    client_cert: /consul_config/ssl/consul-cli.pem
+    client_key: /consul_config/ssl/consul-cli-key.pem
+    validate_certs: no
+    status_code: 200
+    headers:
+      X-Consul-Token: "{{acl_datacenter_master_token}}"
+    body: "{{ lookup('template', 'consul_mngmnt_acl.json.j2') }}"
+    body_format: json
+    return_content: yes
+    dest: "/fetch_data/consul/consul_vault_mngmnt_acl.json"
+  when: consul_mngmnt_acl_name not in acls.json|map(attribute='Name')|list|unique
+
+- name: Fetch the mngmnt acl policy for consul.
+  fetch:
+    flat: yes
+    src: "/fetch_data/consul/consul_vault_mngmnt_acl.json"
+    dest: "{{consul_mngmnt_acl_fetch_path}}"
+  when: consul_mngmnt_acl_name not in acls.json|map(attribute='Name')|list|unique
+
