@@ -1,0 +1,26 @@
+- fail:
+    msg: "Variable '{{ item }}' is not defined"
+  when: item not in vars
+  with_items:
+     - account_credentials_path
+     - vault_unseal_keys_path
+     - acl_token_path
+     - nomad_acl_type
+
+- name: Set fact external_ip
+  set_fact:
+    external_ip: "{{ansible_default_ipv4.address}}"
+
+- name: Load Nomad Serf encryption key.
+  include_vars:
+    file: "../../../{{encryption_keys_path}}/nomad/nomad_serf_key.json"
+
+- name: Load the nomad_acl_token ID
+  include_vars:
+    file: "../../../{{acl_token_path}}/consul/{{ansible_hostname}}_{{nomad_acl_type}}_nomad_acl.json"
+    name: nomad_acl_id
+
+- name: Read unseal keys from unseal_keys.json
+  include_vars:
+    file: ../../../{{vault_unseal_keys_path}}/unseal_keys.json
+    name: vault_unseal_keys

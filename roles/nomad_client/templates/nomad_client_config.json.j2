@@ -1,0 +1,24 @@
+{
+    "bind_addr": "0.0.0.0",
+    "advertise": {
+        "http": "{{external_ip}}:4646",
+        "rpc": "{{external_ip}}:4647",
+        "serf": "{{external_ip}}:4648"
+    },
+    "client": {
+        "enabled": true,
+        "options": {
+            "docker.auth.config": "/nomad/config/docker/creds.json"
+        },
+        "network_interface": "{{host_adapter_name}}",
+        "meta": {{nomad_client_meta | to_json}}
+    },
+    "tls": {
+        "http": true,
+        "rpc": true,
+        "ca_file": "/nomad/config/ssl/cluster-ca.pem",
+        "cert_file": "/nomad/config/ssl/nomad-client.pem",
+        "key_file": "/nomad/config/ssl/nomad-client-key.pem",
+        "verify_https_client": true
+    }
+}

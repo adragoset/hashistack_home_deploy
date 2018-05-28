@@ -1,0 +1,10 @@
+{
+    "acl": {
+        "enabled": true,
+        {% if not is_authoritative %}
+        "replication_token": "{{nomad_replication_token}}",
+        {% endif %}
+        "token_ttl": "30s",
+        "policy_ttl": "60s"
+    }
+}

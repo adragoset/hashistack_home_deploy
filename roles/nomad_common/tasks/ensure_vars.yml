@@ -1,0 +1,10 @@
+- fail: 
+    msg: "Variable '{{ item }}' is not defined"
+  when: item not in vars
+  with_items: 
+     - nomad_image_name
+     - nomad_config_owner
+     - cluster_dc
+     - cluster_region
+     - certificate_path
+

@@ -1,0 +1,119 @@
+- name: Set the nomad bootstrap token fetch path.
+  set_fact:
+    nomad_bootstrap_token_fetch_path: "../../{{acl_token_path}}/nomad_bootstrap.json"
+
+- name: Bootstrap nomad acls
+  uri:
+    url: "https://nomad.service.consul:4646/v1/acl/bootstrap"
+    method: POST
+    client_cert: /nomad_config/ssl/nomad-cli.pem
+    client_key: /nomad_config/ssl/nomad-cli-key.pem
+    validate_certs: no
+    status_code: 200, 500
+    body_format: json
+    return_content: yes
+    dest: /fetch_data/nomad/nomad_acl.json
+  register: bootstrap_result
+
+- name: Fetch the bootstrap token for nomad.
+  fetch:
+    flat: yes
+    src: /fetch_data/nomad/nomad_acl.json
+    dest: "{{nomad_bootstrap_token_fetch_path}}"
+  when: bootstrap_result.status != 500
+
+- name: Create vault mngmnt token
+  uri:
+    url: "https://nomad.service.consul:4646/v1/acl/token"
+    method: POST
+    client_cert: /nomad_config/ssl/nomad-cli.pem
+    client_key: /nomad_config/ssl/nomad-cli-key.pem
+    validate_certs: no
+    status_code: 200
+    headers:
+      X-Nomad-Token: "{{bootstrap_result.json.SecretID}}"
+    body: "{{ lookup('template', 'vault_management_token.json.j2') }}"
+    body_format: json
+    return_content: yes
+    dest: /fetch_data/nomad/nomad_vault_mngmnt_acl.json
+  when: bootstrap_result.status != 500
+
+- name: Set the vault mngmnt acl fetch path.
+  set_fact:
+    nomad_vault_mngmnt_acl_fetch_path: "../../{{acl_token_path}}/nomad/nomad_vault_mngmnt_acl.json"
+  when: bootstrap_result.status != 500
+
+- name: Fetch the nomad vault mngmnt acl policy for vault.
+  fetch:
+    flat: yes
+    src: /fetch_data/nomad/nomad_vault_mngmnt_acl.json
+    dest: "{{nomad_vault_mngmnt_acl_fetch_path}}"
+  when: bootstrap_result.status != 500
+
+- name: Load the nomad vault_acl_token ID
+  include_vars:
+    file: "../../../{{acl_token_path}}/nomad/nomad_vault_mngmnt_acl.json"
+    name: nomad_vault_acl_id
+  when: bootstrap_result.status == 500
+
+- name: Create nomad mngmnt token
+  uri:
+    url: "https://nomad.service.consul:4646/v1/acl/token"
+    method: POST
+    client_cert: /nomad_config/ssl/nomad-cli.pem
+    client_key: /nomad_config/ssl/nomad-cli-key.pem
+    validate_certs: no
+    status_code: 200
+    headers:
+      X-Nomad-Token: "{{bootstrap_result.json.SecretID}}"
+    body: "{{ lookup('template', 'nomad_management_token.json.j2') }}"
+    body_format: json
+    return_content: yes
+    dest: /fetch_data/nomad/nomad_mngmnt_acl.json
+  when: bootstrap_result.status != 500
+
+- name: Set the nomad mngmnt acl fetch path.
+  set_fact:
+    nomad_mngmnt_acl_fetch_path: "../../{{acl_token_path}}/nomad/nomad_mngmnt_acl.json"
+  when: bootstrap_result.status != 500
+
+- name: Fetch the nomad mngmnt acl policy.
+  fetch:
+    flat: yes
+    src: /fetch_data/nomad/nomad_mngmnt_acl.json
+    dest: "{{nomad_mngmnt_acl_fetch_path}}"
+  when: bootstrap_result.status != 500
+
+- name: Load the nomad mngmnt_acl_token ID
+  include_vars:
+    file: "../../../{{acl_token_path}}/nomad/nomad_mngmnt_acl.json"
+    name: nomad_mngmnt_acl_id
+  when: bootstrap_result.status == 500
+
+- name: Create anonymous acl policy
+  uri:
+    url: "https://nomad.service.consul:4646/v1/acl/policy/anonymous"
+    method: PUT
+    client_cert: /nomad_config/ssl/nomad-cli.pem
+    client_key: /nomad_config/ssl/nomad-cli-key.pem
+    validate_certs: no
+    status_code: 200
+    headers:
+      X-Nomad-Token: "{{bootstrap_result.json.SecretID}}"
+    body: "{{ lookup('template', 'nomad_anonymous_policy.json.j2') }}"
+    body_format: json
+  when: bootstrap_result.status != 500
+
+- name: Create anonymous acl policy
+  uri:
+    url: "https://nomad.service.consul:4646/v1/acl/policy/anonymous"
+    method: PUT
+    client_cert: /nomad_config/ssl/nomad-cli.pem
+    client_key: /nomad_config/ssl/nomad-cli-key.pem
+    validate_certs: no
+    status_code: 200
+    headers:
+      X-Nomad-Token: "{{nomad_vault_acl_id.SecretID}}"
+    body: "{{ lookup('template', 'nomad_anonymous_policy.json.j2') }}"
+    body_format: json
+  when: bootstrap_result.status == 500

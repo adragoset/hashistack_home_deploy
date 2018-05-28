@@ -1,0 +1,54 @@
+- name: Copy consul-config
+  template:
+    src: consul-config.json.j2
+    dest: /nomad_config/consul-config.json
+    owner: "{{nomad_config_owner}}"
+    group: admin
+    mode: 0755
+    force: true
+
+- name: Copy nomad_config.json
+  template:
+    src: nomad_server_config.json.j2
+    dest: /nomad_config/nomad_config.json
+    owner: "{{nomad_config_owner}}"
+    group: admin
+    mode: 0755
+    force: yes
+
+- name: Copy Config vault_config.json
+  template:
+    src: vault_config.json.j2
+    dest: /nomad_config/vault_config.json
+    owner: "{{nomad_config_owner}}"
+    group: admin
+    mode: 0755
+    force: yes
+
+- name: Copy Config acl_config.json
+  template:
+    src: acl_config.json.j2
+    dest: /nomad_config/acl_config.json
+    owner: "{{nomad_config_owner}}"
+    group: admin
+    mode: 0755
+    force: yes
+
+- name: Stop and remove the old nomad server container
+  docker:
+    name: nomad_server
+    image: "{{nomad_image_name}}"
+    state: absent
+
+- name: Start nomad server container
+  shell: >
+    docker run -d --name nomad_server --net host
+    -v /opt/nomad:/opt/nomad:Z
+    -v /var/run/docker.sock:/var/run/docker.sock
+    -v /tmp/nomad:/tmp:Z
+    -v /nomad_config:/nomad/config:Z
+    -v /nomad/data:/nomad/data
+    -e 'NOMAD_ADDR=https://localhost:4646'
+    -e 'NOMAD_CACERT=/nomad/config/ssl/cluster-ca.pem'
+    -e 'NOMAD_CLIENT_CERT=/nomad/config/ssl/nomad-cli.pem'
+    -e 'NOMAD_CLIENT_KEY=/nomad/config/ssl/nomad-cli-key.pem' {{nomad_image_name}} agent

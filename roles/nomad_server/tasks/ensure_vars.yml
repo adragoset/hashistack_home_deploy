@@ -1,0 +1,52 @@
+- fail:
+    msg: "Variable '{{ item }}' is not defined"
+  when: item not in vars
+  with_items:
+    - vault_unseal_keys
+
+- fail:
+    msg: "vault_unseal_keys.root_token is undefined"
+  when: vault_unseal_keys.root_token is undefined
+
+- fail:
+    msg: "Variable '{{ item }}' is not defined"
+  when: item not in vars
+  with_items:
+     - external_ip
+     - nomad_encrypt_key
+     - nomad_image_name
+     - nomad_config_owner
+     - certificate_path
+     - vault_unseal_keys_path
+     - is_authoritative
+     - nomad_authoritative_region
+     - cluster_dc
+     - cluster_region
+     - go_env
+
+- fail:
+    msg: "Variable '{{ item }}' is not defined"
+  when: item not in vars and is_authoritative == false
+  with_items:
+     - replication_token
+
+
+- name: Check if Consul is Operational
+  uri:
+    url: "https://consul.service.consul:8501/v1/health/node/{{ansible_hostname}}"
+    method: GET
+    client_cert: /nomad_config/ssl/nomad-cli.pem
+    client_key: /nomad_config/ssl/nomad-cli-key.pem
+    validate_certs: no
+    status_code: 200
+    body_format: json
+
+- name: Check if Vault is Operational
+  uri:
+    url: https://vault.service.consul:8200/v1/sys/health
+    method: GET
+    client_cert: /nomad_config/ssl/nomad-cli.pem
+    client_key: /nomad_config/ssl/nomad-cli-key.pem
+    validate_certs: no
+    status_code: 200, 429
+    body_format: json

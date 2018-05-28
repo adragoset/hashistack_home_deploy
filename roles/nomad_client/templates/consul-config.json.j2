@@ -1,0 +1,11 @@
+{
+    "consul": {
+        "address": "127.0.0.1:8501",
+        "ssl": true,
+        "verify_ssl": true,
+        "token": "{{nomad_acl_id.ID}}",
+        "ca_file": "/nomad/config/ssl/cluster-ca.pem",
+        "cert_file": "/nomad/config/ssl/nomad-client.pem",
+        "key_file": "/nomad/config/ssl/nomad-client-key.pem"
+    }
+}

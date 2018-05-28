@@ -1,0 +1,93 @@
+- import_tasks: ensure_vars.yml
+
+- name: pull an npdsoftwaredev/docker_nomad
+  shell: "docker pull {{nomad_image_name}}"
+  retries: 5
+  delay: 1
+  register: result
+  until: result|succeeded
+  become: false
+
+
+- name: Ensures /nomad_config dir exists
+  file:
+    path: /nomad_config
+    state: directory
+    owner: "{{nomad_config_owner}}"
+    group: admin
+    mode: 0755
+
+- name: Ensures /nomad_config/ssl dir exists
+  file:
+    path: /nomad_config/ssl
+    state: directory
+    owner: "{{nomad_config_owner}}"
+    group: admin
+    mode: 0755
+
+- name: Ensures /nomad_config/dc-info.json exists
+  template:
+    src: dc-info.json.j2
+    dest: /nomad_config/dc-info.json
+    owner: "{{nomad_config_owner}}"
+    group: admin
+    mode: 0755
+    force: true
+
+- name: Ensures /nomad_config/common_config.json exists
+  template:
+    src: common-config.json.j2
+    dest: /nomad_config/common-config.json
+    owner: "{{nomad_config_owner}}"
+    group: admin
+    mode: 0755
+    force: true
+
+- name: Ensures /nomad_config/ssl/cluster-ca.pem exists
+  copy:
+    src: "/root_ca/cluster-ca.pem"
+    dest: /nomad_config/ssl/cluster-ca.pem
+    owner: "{{nomad_config_owner}}"
+    group: admin
+    remote_src: yes
+    mode: 0755
+    force: true
+
+- name: Ensures /nomad_config/ssl/nomad-cli.pem exists
+  copy:
+    src: "../../../{{certificate_path}}/nomad/nomad-cli.pem"
+    dest: /nomad_config/ssl/nomad-cli.pem
+    owner: "{{nomad_config_owner}}"
+    group: admin
+    mode: 0755
+    force: true
+
+- name: Ensures /nomad_config/ssl/nomad-cli-key.pem exists
+  copy:
+    src: "../../../{{certificate_path}}/nomad/nomad-cli-key.pem"
+    dest: /nomad_config/ssl/nomad-cli-key.pem
+    owner: "{{nomad_config_owner}}"
+    group: admin
+    mode: 0755
+    force: true
+
+- name: Ensures /nomad/data dir exists
+  file:
+    path: /nomad/data
+    state: directory
+    owner: "{{nomad_config_owner}}"
+    group: admin
+    recurse: yes
+    mode: 0755
+
+- name: Ensure the selinux policy for this folder is turned off.
+  shell: chcon -Rt svirt_sandbox_file_t /nomad
+  ignore_errors: yes
+
+- name: Ensures /opt/nomad dir exists
+  file:
+    path: /opt/nomad
+    state: directory
+    owner: "{{nomad_config_owner}}"
+    group: admin
+    mode: 0755

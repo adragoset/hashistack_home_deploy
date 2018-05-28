@@ -1,0 +1,19 @@
+- name: Set the nomad hostnames
+  set_fact:
+    hostnames: "*.global.nomad,*.nomad,nomad.service.consul,*.node.{{cluster_dc}}.consul,server.{{cluster_region}}.nomad,{{ansible_hostname}},{{ansible_default_ipv4.address}},localhost,127.0.0.1,{{docker_bridge_gateway}}"
+
+- name: Build Nomad Server Certificate for host
+  shell: "echo '{\"CN\": \"nomad-server.{{cluster_region}}.{{cluster_dc}}\", \"key\":{\"algo\":\"rsa\",\"size\":2048}, \"names\": [{\"C\": \"US\",\"L\": \"New Orleans\",\"O\": \"Dragoset Home\",\"OU\": \"DX\"}]}' | cfssl gencert -ca=/root_ca/cluster-ca.pem -ca-key=/root_ca/cluster-ca-key.pem -config=/root_ca/cert_config.json -hostname={{hostnames}} - | cfssljson -bare /nomad_config/ssl/nomad-server"
+  environment: "{{go_env}}"
+
+- name: Update permissions for nomad-server.pem
+  file:
+    path: /nomad_config/ssl/nomad-server.pem
+    group: admin
+    mode: 0755
+
+- name: Update permissions for nomad-server-key.pem
+  file:
+    path: /nomad_config/ssl/nomad-server-key.pem
+    group: admin
+    mode: 0755

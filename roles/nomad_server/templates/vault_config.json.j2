@@ -1,0 +1,11 @@
+{
+    "vault": {
+        "enabled": true,
+        "address": "https://vault.service.consul:8200",
+        "ca_file": "/nomad/config/ssl/cluster-ca.pem",
+        "cert_file": "/nomad/config/ssl/nomad-server.pem",
+        "key_file": "/nomad/config/ssl/nomad-server-key.pem",
+
+        "token": "{{vault_unseal_keys.root_token}}"
+    }
+}

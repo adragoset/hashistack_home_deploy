@@ -1,0 +1,24 @@
+- fail:
+    msg: "Variable '{{ item }}' is not defined"
+  when: item not in vars
+  with_items:
+     - nomad_image_name
+     - nomad_config_owner
+     - certificate_path
+     - docker_creds
+     - host_adapter_name
+     - cluster_dc
+     - cluster_region
+     - go_env
+
+
+
+- name: Check if Consul is Operational
+  uri:
+    url: "https://localhost:8501/v1/health/node/{{ansible_hostname}}"
+    method: GET
+    client_cert: /nomad_config/ssl/nomad-cli.pem
+    client_key: /nomad_config/ssl/nomad-cli-key.pem
+    validate_certs: no
+    status_code: 200
+    body_format: json

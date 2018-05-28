@@ -1,0 +1,10 @@
+- fail: 
+    msg: "Variable '{{ item }}' is not defined"
+  when: item not in vars
+  with_items: 
+     - acl_token_path
+     - docker_bridge_bip
+     - docker_bridge_bip
+     - cluster_dc
+     - cluster_region
+     - certificate_path

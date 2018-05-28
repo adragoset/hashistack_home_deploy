@@ -6,5 +6,4 @@
      - vault_config_owner
      - certificate_path
      - cluster_dc
-     - domain_suffix
      - go_env

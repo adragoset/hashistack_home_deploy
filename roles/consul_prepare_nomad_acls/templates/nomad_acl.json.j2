@@ -1,0 +1,8 @@
+{
+    {% if nomad_acl_id is defined %}
+    "ID": "{{nomad_acl_id.ID}}",
+    {% endif %}
+    "Name": "nomad_{{nomad_acl_type}}_token_{{ansible_hostname}}",
+    "Type": "client",
+    "Rules": "node \"\" { policy = \"read\" } node \"{{ansible_hostname}}\" { policy = \"write\" } service \"\" { policy = \"write\" } key \"\" { policy = \"write\" } agent \"\" { policy = \"write\" } session \"\" { policy = \"write\" }"
+}

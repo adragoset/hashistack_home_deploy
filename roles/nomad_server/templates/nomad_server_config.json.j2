@@ -1,0 +1,22 @@
+{
+    "bind_addr": "0.0.0.0",
+    "advertise": {
+        "http": "{{external_ip}}:4646",
+        "rpc": "{{external_ip}}:4647",
+        "serf": "{{external_ip}}:4648"
+    },
+    "server": {
+        "authoritative_region": "{{nomad_authoritative_region}}",
+        "enabled": true,
+        "bootstrap_expect": 3,
+        "encrypt": "{{nomad_encrypt_key}}"
+    },
+    "tls": {
+        "http": true,
+        "rpc": true,
+        "ca_file": "/nomad/config/ssl/cluster-ca.pem",
+        "cert_file": "/nomad/config/ssl/nomad-server.pem",
+        "key_file": "/nomad/config/ssl/nomad-server-key.pem",
+        "verify_https_client": true
+    }
+}
