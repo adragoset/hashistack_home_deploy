@@ -1,18 +1,3 @@
-- name: Install common configuration.
-  hosts: cluster
-  sudo: yes
-
-  roles:
-    - nodes_preconfig
-    - nodes_common
-    - nodes_postconfig
-
-- name: Install worker configuration.
-  hosts: consul-clients
-
-  roles:
-     - nodes_worker_config
-
 - name: Configure Consul servers.
   hosts: consul-leader, consul-servers
   
