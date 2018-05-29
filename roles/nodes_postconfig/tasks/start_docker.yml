@@ -7,6 +7,9 @@
     src: daemon.json.j2
     dest: /etc/docker/daemon.json
 
+- name: unmask the docker service.
+  shell: systemctl unmask docker.service && systemctl unmask docker.socket
+
 - name: Bounce the docker daemon.
   service:
     name: docker
