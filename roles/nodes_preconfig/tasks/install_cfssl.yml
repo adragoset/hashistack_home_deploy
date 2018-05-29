@@ -1,5 +1,12 @@
+- name: remove the cfssl directory
+  shell: rm -rf /root/Go/Projects/src/github.com/cloudflare/cfssl
+
 - name: Install cfssl
-  shell: go get github.com/cloudflare/cfssl/cmd/...
+  shell: |
+  timeout 300 
+  go get github.com/cloudflare/cfssl/cmd/...
   environment: "{{go_env}}"
-  async: 300
-  poll: 10
+  retries: 5
+  delay: 1
+  register: result
+  until: result.rc == 0
