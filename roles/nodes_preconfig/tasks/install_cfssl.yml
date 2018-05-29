@@ -2,9 +2,7 @@
   shell: rm -rf /root/Go/Projects/src/github.com/cloudflare/cfssl
 
 - name: Install cfssl
-  shell: |
-    timeout 300 
-    go get github.com/cloudflare/cfssl/cmd/...
+  shell: go get github.com/cloudflare/cfssl/cmd/cfssljson
   environment: "{{go_env}}"
   retries: 5
   delay: 1
