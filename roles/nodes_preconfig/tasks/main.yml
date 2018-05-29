@@ -2,6 +2,6 @@
 
 - import_tasks: install_dependencies.yml
 
-- import_tasks: install_cfssl.yml
-
 - import_tasks: configure_dns_masq.yml
+
+- import_tasks: install_cfssl.yml
