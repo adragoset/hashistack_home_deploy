@@ -102,6 +102,14 @@
     state: present
   async: 60
   poll: 10
+  register: yum_sleeper
+
+
+- name: 'YUM - check on fire and forget task'
+  async_status: jid={{ yum_sleeper.ansible_job_id }}
+  register: job_result
+  until: job_result.finished
+  retries: 30
 
 - name: Install docker-py
   pip:
