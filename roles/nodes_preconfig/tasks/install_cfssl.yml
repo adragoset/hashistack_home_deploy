@@ -1,5 +1,5 @@
 - name: Install cfssl
-  shell: go get -u github.com/cloudflare/cfssl/cmd/...
+  shell: go get github.com/cloudflare/cfssl/cmd/...
   environment: "{{go_env}}"
   async: 300
   poll: 10
