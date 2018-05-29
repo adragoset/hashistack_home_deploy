@@ -1,7 +1,5 @@
 - name: Install cfssl
   shell: go get -u github.com/cloudflare/cfssl/cmd/...
   environment: "{{go_env}}"
-  retries: 5
-  delay: 1
-  register: result
-  until: result is succeeded
+  async: 300
+  poll: 10
