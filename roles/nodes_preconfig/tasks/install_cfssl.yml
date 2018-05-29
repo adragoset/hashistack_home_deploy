@@ -3,8 +3,8 @@
 
 - name: Install cfssl
   shell: |
-  timeout 300 
-  go get github.com/cloudflare/cfssl/cmd/...
+    timeout 300 
+    go get github.com/cloudflare/cfssl/cmd/...
   environment: "{{go_env}}"
   retries: 5
   delay: 1
