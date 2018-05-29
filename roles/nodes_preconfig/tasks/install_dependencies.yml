@@ -100,10 +100,8 @@
   apt:
     name: docker-ce
     state: present
-  retries: 5
-  delay: 1
-  register: result
-  until: result is succeeded
+  async: 60
+  poll: 10
 
 - name: Install docker-py
   pip:
