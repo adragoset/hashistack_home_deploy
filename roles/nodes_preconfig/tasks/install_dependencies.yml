@@ -90,7 +90,7 @@
   apt:
     update_cache: yes
   async: 60
-  poll: 60
+  poll: 10
 
 - name: Fix stuff failing
   shell: dpkg --configure -a
