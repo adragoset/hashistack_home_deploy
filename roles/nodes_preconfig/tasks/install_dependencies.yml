@@ -74,6 +74,7 @@
     - apt-transport-https
     - gnupg2
     - software-properties-common
+    - python-setuptools
   retries: 5
   delay: 1
   register: result
