@@ -89,7 +89,9 @@
   become: true
   apt:
     update_cache: yes
-   
+
+- name: Fix stuff failing
+  shell: dpkg --configure -a
 
 - name: Install Docker
   apt:
