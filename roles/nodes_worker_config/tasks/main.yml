@@ -1,7 +1,7 @@
 - import_tasks: ensure_vars.yml
 
 - name: Install samba/cifs tools
-  yum:
+  apt:
     name:  "{{item}}"
     state: present
   with_items:
