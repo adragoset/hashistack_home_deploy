@@ -20,7 +20,7 @@
   until: result is succeeded
 
 - name: Set low speed timeouts for git
-  shell: git config --global http.lowSpeedLimit 500 && git config --global http.lowSpeedTime 60
+  shell: git config --global --unset http.lowSpeedLimit && git config --global --unset http.lowSpeedTime
 
 - name: Uninstall old versions of docker
   apt:
