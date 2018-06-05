@@ -8,6 +8,7 @@
 
 - name: Install worker configuration.
   hosts: consul-clients
+  sudo: yes
 
   roles:
      - nodes_worker_config
